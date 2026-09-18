@@ -1,0 +1,66 @@
+name: Semantic Release
+description: >-
+  Runs semantic-release with commit-analyzer, release-notes-generator and
+  github plugins, using pinned versions to avoid breaking changes.
+author: digitalservicebund
+
+inputs:
+  node-version:
+    description: Node.js version to use for running semantic-release.
+    required: false
+    default: "22"
+  github-token:
+    description: >-
+      Token used by semantic-release to create GitHub releases, tags and
+      comments. Typically secrets.GITHUB_TOKEN.
+    required: true
+  semantic-release-version:
+    description: Pinned version of the semantic-release package.
+    required: false
+    default: "25.0.9"
+  commit-analyzer-version:
+    description: Pinned version of @semantic-release/commit-analyzer.
+    required: false
+    default: "13.0.1"
+  release-notes-generator-version:
+    description: Pinned version of @semantic-release/release-notes-generator.
+    required: false
+    default: "14.1.1"
+  github-plugin-version:
+    description: Pinned version of @semantic-release/github.
+    required: false
+    default: "12.0.9"
+  working-directory:
+    description: Directory to run semantic-release in.
+    required: false
+    default: "."
+  extra-args:
+    description: Additional arguments to pass to the semantic-release CLI.
+    required: false
+    default: ""
+
+runs:
+  using: composite
+  steps:
+    - name: Checkout
+      uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332
+      with:
+        fetch-depth: 0
+
+    - name: Setup Node
+      uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+      with:
+        node-version: ${{ inputs.node-version }}
+
+    - name: Run Semantic Release
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: >-
+        npx --yes
+        -p semantic-release@${{ inputs.semantic-release-version }}
+        -p @semantic-release/commit-analyzer@${{ inputs.commit-analyzer-version }}
+        -p @semantic-release/release-notes-generator@${{ inputs.release-notes-generator-version }}
+        -p @semantic-release/github@${{ inputs.github-plugin-version }}
+        semantic-release ${{ inputs.extra-args }}
+      env:
+        GITHUB_TOKEN: ${{ inputs.github-token }}
