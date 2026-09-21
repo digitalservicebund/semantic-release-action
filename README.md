@@ -36,7 +36,7 @@ Replace `<ref>` with a tag, branch, or commit SHA of this action.
 | Name                               | Required | Default    | Description                                                                   |
 | ----------------------------------- | -------- | ---------- | ------------------------------------------------------------------------------ |
 | `github-token`                      | yes      | –          | Token used by semantic-release to create GitHub releases, tags and comments. Typically `secrets.GITHUB_TOKEN`. |
-| `node-version`                      | no       | `22`       | Node.js version used to run semantic-release.                                 |
+| `node-version`                      | no       | `26`       | Node.js version used to run semantic-release.                                 |
 | `semantic-release-version`          | no       | `25.0.9`   | Pinned version of the `semantic-release` package.                             |
 | `commit-analyzer-version`           | no       | `13.0.1`   | Pinned version of `@semantic-release/commit-analyzer`.                        |
 | `release-notes-generator-version`   | no       | `14.1.1`   | Pinned version of `@semantic-release/release-notes-generator`.                |

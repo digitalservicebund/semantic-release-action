@@ -8,7 +8,7 @@ inputs:
   node-version:
     description: Node.js version to use for running semantic-release.
     required: false
-    default: "22"
+    default: "26"
   github-token:
     description: >-
       Token used by semantic-release to create GitHub releases, tags and
