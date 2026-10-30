@@ -49,7 +49,18 @@ Replace `<ref>` with a tag, branch, or commit SHA of this action.
 1. Checks out the repository with full history (`fetch-depth: 0`), required
    by semantic-release to analyze the full commit history.
 2. Sets up the requested Node.js version.
-3. Runs `semantic-release` via `npx`, installing the exact pinned versions of
+3. If the repository being released doesn't already define its own
+   semantic-release config (`.releaserc*`, `release.config.*`, or a `release`
+   key in `package.json`), copies this action's
+   [`default-release-config.json`](./default-release-config.json) into the
+   working directory as `.releaserc.json` and removes it again after the run.
+   This default config adds a `commit-analyzer` `releaseRules` entry so
+   `chore(deps): ...` / `build(deps): ...` commits (e.g. from Dependabot)
+   trigger a `patch` release, in addition to the standard Angular convention
+   (`feat:` → minor, `fix:`/`perf:` → patch, `BREAKING CHANGE` → major).
+   Repositories with their own config file are left untouched and must add
+   equivalent `releaseRules` themselves if they want the same behavior.
+4. Runs `semantic-release` via `npx`, installing the exact pinned versions of
    `semantic-release`, `@semantic-release/commit-analyzer`,
    `@semantic-release/release-notes-generator`, and `@semantic-release/github`.
 
