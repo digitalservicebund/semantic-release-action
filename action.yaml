@@ -52,6 +52,28 @@ runs:
       with:
         node-version: ${{ inputs.node-version }}
 
+    - name: Apply default release configuration
+      id: default-config
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      env:
+        ACTION_PATH: ${{ github.action_path }}
+      run: |
+        has_config=false
+        for file in .releaserc .releaserc.json .releaserc.yaml .releaserc.yml .releaserc.js .releaserc.cjs .releaserc.mjs release.config.js release.config.cjs release.config.mjs; do
+          if [ -f "$file" ]; then
+            has_config=true
+            break
+          fi
+        done
+        if [ "$has_config" = false ] && [ -f package.json ] && node -e "process.exit(require('./package.json').release ? 0 : 1)"; then
+          has_config=true
+        fi
+        if [ "$has_config" = false ]; then
+          cp "$ACTION_PATH/default-release-config.json" .releaserc.json
+          echo "generated=true" >> "$GITHUB_OUTPUT"
+        fi
+
     - name: Run Semantic Release
       shell: bash
       working-directory: ${{ inputs.working-directory }}
@@ -64,3 +86,9 @@ runs:
         semantic-release ${{ inputs.extra-args }}
       env:
         GITHUB_TOKEN: ${{ inputs.github-token }}
+
+    - name: Remove generated default release configuration
+      if: always() && steps.default-config.outputs.generated == 'true'
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: rm -f .releaserc.json
